@@ -1,29 +1,48 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
+from pythonjsonlogger import jsonlogger
 
-# Novo diretório compartilhado entre o container da API e o Promtail
 LOG_DIR = "/var/log/cat-api"
 LOG_FILE = os.path.join(LOG_DIR, "cat-api.log")
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
-LOG_FORMAT = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+# Lista dos campos padrão e adicionais
+log_fields = [
+    'asctime', 'levelname', 'name', 'message',
+    'method', 'endpoint', 'trace_id'
+]
+
+# Usar placeholders compatíveis com o estilo de formatação do jsonlogger
+log_format = ' '.join(f'%({field})s' for field in log_fields)
+
+# Configura o formatador JSON
+json_formatter = jsonlogger.JsonFormatter(log_format)
 
 file_handler = RotatingFileHandler(LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=3)
-file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+file_handler.setFormatter(json_formatter)
 file_handler.setLevel(logging.INFO)
 
 console_handler = logging.StreamHandler()
-console_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+console_handler.setFormatter(json_formatter)
 
-# Aplica ambos os handlers no logger raiz
 logging.basicConfig(level=logging.INFO, handlers=[file_handler, console_handler])
 
-def configure_logging():
-    # Adiciona também aos loggers do Uvicorn (para logs de acesso e erro)
-    uvicorn_access_logger = logging.getLogger("uvicorn.access")
-    uvicorn_access_logger.addHandler(file_handler)
+# Logger principal
+logger = logging.getLogger("cat-api")
 
-    uvicorn_error_logger = logging.getLogger("uvicorn.error")
-    uvicorn_error_logger.addHandler(file_handler)
+def configure_logging():
+    # Enviar logs do uvicorn também para o mesmo arquivo
+    for uvicorn_logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access"]:
+        uv_logger = logging.getLogger(uvicorn_logger_name)
+        uv_logger.setLevel(logging.INFO)
+        uv_logger.addHandler(file_handler)
+        uv_logger.addHandler(console_handler)
+
+def log_request(level, method, endpoint, trace_id, message):
+    logger.log(level, message, extra={
+        'method': method,
+        'endpoint': endpoint,
+        'trace_id': trace_id
+    })

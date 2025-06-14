@@ -10,7 +10,7 @@ services:
       - ../.env
     volumes:
       - ../api:/app/api
-      - ./logs:/var/log/cat-api  # Logs visíveis pelo Promtail
+      - ./log:/var/log/cat-api  # Logs visíveis pelo Promtail
     ports:
       - "8000:8000"
     depends_on:
@@ -36,13 +36,23 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=Salvando@2025
 
+  consul:
+    image: hashicorp/consul:1.16
+    container_name: consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    command: agent -server -bootstrap -ui -client=0.0.0.0
+
   loki:
     image: grafana/loki:2.9.0
     container_name: loki
     volumes:
-      - ./loki-config.yaml:/etc/loki/loki-config.yaml
+      - ./loki-config.yaml:/etc/loki/loki-config.yaml:ro
       - loki-data:/loki
     command: -config.file=/etc/loki/loki-config.yaml
+    depends_on:
+      - consul
     ports:
       - "3100:3100"
 
@@ -50,8 +60,8 @@ services:
     image: grafana/promtail:2.9.0
     container_name: promtail
     volumes:
-      - ./promtail-config.yaml:/etc/promtail/config.yml
-      - ./logs:/var/log/cat-api
+      - ./promtail-config.yaml:/etc/promtail/config.yml:ro
+      - ./log:/var/log/cat-api
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - loki

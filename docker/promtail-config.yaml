@@ -15,4 +15,5 @@ scrape_configs:
           - localhost
         labels:
           job: cat-api
+          app: cat-api
           __path__: /var/log/cat-api/*.log

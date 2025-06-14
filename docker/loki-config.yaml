@@ -5,13 +5,21 @@ server:
   grpc_listen_port: 9096
 
 ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: consul
+        consul:
+          host: consul:8500
+      replication_factor: 1
+    final_sleep: 0s
   wal:
     enabled: true
     dir: /loki/wal
 
 schema_config:
   configs:
-    - from: 2020-10-24
+    - from: 2022-01-01
       store: boltdb-shipper
       object_store: filesystem
       schema: v11
@@ -28,4 +36,5 @@ storage_config:
     directory: /loki/chunks
 
 compactor:
+  working_directory: /loki/compactor
   shared_store: filesystem
