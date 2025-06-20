@@ -78,6 +78,12 @@ locust -f locustfile.py
 
 ## Manual com Prints dos Logs (Loki + Grafana)
 
+### Query de log em tempo real
+
+```Grafana
+{app="cat-api"}
+```
+
 <img src="img\Log_Grafana.png" width="700"/>
 
 ---
