@@ -76,5 +76,18 @@ locust -f locustfile.py
 
 ---
 
+## Manual com Prints dos Logs (Loki + Grafana)
+
+![Logs no Grafana via Loki](img\Log_Grafana.png)
+
+---
+
+## Prints dos Dashboards (Prometheus no Grafana)
+
+### Dashboard 1: Métricas de Latência e Total de Requisições
+
+![Dashboard com métricas Prometheus](img\Dashboard.png)
+
+
 **Autor:** Lucas Manoel  
 **Ano:** 2025
