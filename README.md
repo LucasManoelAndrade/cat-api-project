@@ -2,7 +2,7 @@
 
 ## a. Documentação do Projeto
 
-Este projeto consiste em uma API que consome dados da TheCatAPI e os armazena em um banco de dados local. Além disso, a aplicação expõe esses dados via endpoints RESTful, permitindo a consulta por nome, origem e temperamento das raças de gatos. O projeto também inclui um ecossistema completo de observabilidade com Prometheus, Grafana, Loki, e métricas customizadas via middleware.
+Este projeto consiste em uma API que consome dados da TheCatAPI [https://thecatapi.com/](https://thecatapi.com/) e os armazena em um banco de dados local. Além disso, a aplicação expõe esses dados via endpoints RESTful, permitindo a consulta por nome, origem e temperamento das raças de gatos. O projeto também inclui um ecossistema completo de observabilidade com Prometheus, Grafana, Loki, e métricas customizadas via middleware.
 
 ## b. Documentação das APIs
 
